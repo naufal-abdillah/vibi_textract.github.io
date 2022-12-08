@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" style="--bs-body-bg: 161e2d;">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>AWS Textract Demo</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600&amp;display=swap">
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    <script src="script.js"></script>
+    <script>
+        function eraseText() {
+            $("#resultTA").text('');
+        }
+        function addData() {
+            var fullPath  =  document.getElementById('file').value;
+            var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+            var filename = fullPath.substring(startIndex);
+            if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+                filename = filename.substring(1);
+            }
+            // alert(filename);
+            var fd = new FormData();
+            var files = $('#file')[0].files;
+
+        //     $.ajax({
+        //       url: 'https://ih3t0x85re.execute-api.us-east-1.amazonaws.com/dev/na-admin-textract-async/async-doc-text/'+filename,
+        //       type: 'put',
+        //       data: fd,
+        //       contentType: false,
+        //       processData: false,
+        //       success: function(response){
+        //          if(response != 0){
+        //             alert('file '+filename+' has been uploaded');
+        //          }else{
+        //             alert('file not uploaded');
+        //          }
+        //       },
+        //    });
+
+        $.ajax({
+            type: 'GET',
+            dataType:"jsonp",
+            url: 'https://00puc9uf00.execute-api.us-east-1.amazonaws.com/getTextractOutput?filename=ming-bon1.jpg',
+            success: function (data, status, xhr) {
+                console.log('data: ', data);
+            }
+        });
+
+            $('#resultTA').append("Result");
+            
+        }
+        $(document).ready(function name() {
+           $("#btnSubmit").click(function name() {
+                addData();
+           })
+           $("#file").click(function name() {
+                eraseText();
+           })
+        });
+
+    </script>
+</head>
+
+<body class="flex-shrink-0" style="--bs-body-bg: #212529;">
+    <script src="pdf.js"></script>
+    <script src="pdf.worker.js"></script>
+    <div id="tempDiv" style="display: none;"></div>
+    <nav class="navbar navbar-light navbar-expand-md">
+        <div class="container-fluid"><img src="assets/img/vibilogo.png" width="80" height="80" style="margin: 34px;"><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link active" href="#" style="color: #ffffff;">AWS TEXTRACT</a></li>
+                    <li class="nav-item"></li>
+                    <li class="nav-item"></li>
+                    <li class="nav-item"></li>
+                </ul><a class="btn btn-primary ms-auto" role="button" href="https://docs.aws.amazon.com/textract/latest/dg/what-is.html" target="_blank">Docs</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <h1 class="text-start mx-auto" style="margin-bottom: 25px;color: #ffffff;">AWS Textract</h1>
+        <p style="color: rgb(255,255,255);text-align: justify;">Amazon Textract is a machine learning (ML) service that automatically extracts text, handwriting, and data from scanned documents. It goes beyond simple optical character recognition (OCR) to identify, understand, and extract data from forms and tables</p>
+    </div>
+    <div class="container" style="margin-bottom: 8px;">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card d-flex flex-row align-items-center align-self-center m-auto" style="margin-left: 40px;height: 100%;width: 100%;">
+                    <div class="card-body justify-content-center align-items-center" style="text-align: center;">
+                        <h4 class="card-title" style="text-align: center;">Step 1</h4>
+                        <p class="card-text" style="text-align: center;">Upload your image</p>
+                        <div id="imagePreview"></div>
+                        <div><canvas id="pdf-preview" width="0" height="0" style="text-align: center;"></canvas></div>
+                        
+                        <input type="file" id="file" accept=".pdf, image/*" style="color: #000000;text-align: center;margin: 8px; width: 41%;" onchange="return fileValidation(file)">
+                        <button class="btn btn-primary d-flex d-xxl-flex align-items-center mx-auto justify-content-xxl-center align-items-xxl-center" type="button" id="btnSubmit" style="margin: 8px;">Upload</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card d-flex flex-row align-items-center align-self-center m-auto" style="margin-left: 40px;width: 100%;height: 100%;">
+                    <div class="card-body">
+                        <h4 class="card-title" style="text-align: center;">Result</h4>
+                        <p class="card-text" style="text-align: center;">Your result will be seen here</p>
+                        <textarea class="form-control-lg d-flex mx-auto" style="text-align: center;" readonly="" id="resultTA"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+
+
+</body>
+
+</html>
