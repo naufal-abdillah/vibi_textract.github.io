@@ -14,9 +14,16 @@
         function eraseText() {
             $("#resultTA").text('');
         }
+        
+
         function addData() {
             var fullPath  =  document.getElementById('file').value;
             var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+            // DEBUG
+            console.log(fullPath)
+            console.log(startIndex)
+
+            // DEBUG
             var filename = fullPath.substring(startIndex);
             if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
                 filename = filename.substring(1);
@@ -24,14 +31,53 @@
             // alert(filename);
             var fd = new FormData();
             var files = $('#file')[0].files;
+            let tmpFile0 = files[0]
+            console.log(files[0].type)
+            console.log(filename)
+            // fd.append('test.jpg', tmpFile0)
+            // console.log(fd)
+
+
+            // console.log(fd.values)
+            signedURL = 'https://na-admin-textract-async.s3.amazonaws.com/async-doc-text/' + filename;
+
+            // const result = fetch(signedURL, {
+            //     method: 'PUT',
+            //     body: fd
+            // })
+
+            $.ajax({
+              url: signedURL,
+              type: 'PUT',
+              data: tmpFile0,
+            //   data: tmpFile0,
+              dataType: 'json',
+              headers: {  'Access-Control-Allow-Origin': '*' },
+              contentType: tmpFile0.type,
+              processData: false,
+            //   crossDomain: true,
+              success: function(response){
+                console.log(response)
+                 if(response != 0){
+                    alert('file '+filename+' has been uploaded');
+                 }else{
+                    alert('file not uploaded');
+                 }
+              },
+           });
 
         //     $.ajax({
-        //       url: 'https://ih3t0x85re.execute-api.us-east-1.amazonaws.com/dev/na-admin-textract-async/async-doc-text/'+filename,
-        //       type: 'put',
-        //       data: fd,
-        //       contentType: false,
+        //       url: `https://ih3t0x85re.execute-api.us-east-1.amazonaws.com/dev/na-admin-textract-async/async-doc-text/${filename}`,
+        //       type: 'PUT',
+        //     //   data: fd,
+        //       data: tmpFile0,
+        //       dataType: 'json',
+        //       headers: {  'Access-Control-Allow-Origin': '*' },
+        //       contentType: tmpFile0.type,
         //       processData: false,
+        //       crossDomain: true,
         //       success: function(response){
+        //         // console.log(response)
         //          if(response != 0){
         //             alert('file '+filename+' has been uploaded');
         //          }else{
@@ -39,19 +85,66 @@
         //          }
         //       },
         //    });
+        let textractResult = ''
+        // function processFile() {
+        
+        // SAFE CODE 
+        // $.ajax({
+        //     type: 'GET',
+        //     dataType:"json",
+        //     url: 'https://00puc9uf00.execute-api.us-east-1.amazonaws.com/getTextractOutput?filename=' + filename,
+        //     success: function (data, status, xhr) {
+        //         console.log('data: ', data);
+        //         textractResult = JSON.stringify(data);
+        //         console.log(textractResult);
+        //         $('#resultTA').append(textractResult);
+        //     },
+        //     error: function () {
+        //         //alert("fail");
+        //         //callback getMyJson here in 5 seconds
+        //         setTimeout(function () {
+        //             console.log("error")
+        //             // getMyJson();
+        //         }, 5000)
+        //     }
+        // });
+        // SAFE CODE 
 
-        $.ajax({
-            type: 'GET',
-            dataType:"jsonp",
-            url: 'https://00puc9uf00.execute-api.us-east-1.amazonaws.com/getTextractOutput?filename=ming-bon1.jpg',
-            success: function (data, status, xhr) {
-                console.log('data: ', data);
-            }
-        });
+        function processFile() {
+            $.ajax({
+                type: 'GET',
+                dataType:"json",
+                url: 'https://00puc9uf00.execute-api.us-east-1.amazonaws.com/getTextractOutput?filename=' + filename,
+                success: function (data, status, xhr) {
+                    console.log('data: ', data);
+                    textractResult = JSON.stringify(data);
+                    console.log(textractResult);
+                    $('#resultTA').append(textractResult);
+                },
+                error: function () {
+                    //alert("fail");
+                    //callback getMyJson here in 5 seconds
+                    setTimeout(function () {
+                        console.log("error")
+                        processFile();
+                        // getMyJson();
+                    }, 5000)
+                }
+            });
+        }
+        processFile();
 
-            $('#resultTA').append("Result");
+        // console.log(textractResult);
+
+            // $('#resultTA').append("textractResult");
             
         }
+        // DEBUG
+        // function handleData(data /* , textStatus, jqXHR */ ) {
+        //     alert(data);
+        //     //do some stuff
+        // }
+        // DEBUG
         $(document).ready(function name() {
            $("#btnSubmit").click(function name() {
                 addData();
